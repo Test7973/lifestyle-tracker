@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="description" content="Track and improve your lifestyle with this offline-first PWA">
+    
+    <title>Lifestyle Tracker</title>
+
+    <!-- PWA support -->
+    <link rel="manifest" href="/lifestyle-tracker/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/lifestyle-tracker/assets/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="/lifestyle-tracker/assets/icons/icon-192x192.png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/lifestyle-tracker/css/styles.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/components/forms.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/components/buttons.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/components/cards.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/components/notifications.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/views/dashboard.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/views/entries.css">
+    <link rel="stylesheet" href="/lifestyle-tracker/css/views/goals.css">
+</head>
+<body>
+    <!-- App Shell -->
+    <header class="app-header">
+        <nav id="main-nav" class="main-nav">
+            <a href="/lifestyle-tracker/" class="nav-brand" data-route="/">
+                Lifestyle Tracker
+            </a>
+            <!-- Navigation links are dynamically populated based on auth state -->
+            <div class="nav-links" id="nav-links"></div>
+        </nav>
+    </header>
+
+    <!-- Notification Area -->
+    <div id="notification-area" class="notification-area"></div>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="main-content">
+        <!-- Content is dynamically injected here -->
+    </main>
+
+    <!-- Loading Indicator -->
+    <div id="loader" class="loader hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Offline Indicator -->
+    <div id="offline-indicator" class="offline-indicator hidden">
+        Offline Mode
+    </div>
+
+    <!-- Scripts -->
+    <!-- Core Libraries -->
+    <script type = "module" src="/lifestyle-tracker/js/crypto-utils.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/db.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/auth.js"></script>
+
+    <!-- Views -->
+    <script type = "module" src="/lifestyle-tracker/js/views/dashboard.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/views/entries.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/views/goals.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/views/settings.js"></script>
+
+    <!-- Components -->
+    <script type = "module" src="/lifestyle-tracker/js/components/calendar.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/components/charts.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/components/entry-form.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/components/goal-tracker.js"></script>
+
+    <!-- Utilities -->
+    <script type = "module" src="/lifestyle-tracker/js/utils/date-utils.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/utils/notification-utils.js"></script>
+    <script type = "module" src="/lifestyle-tracker/js/utils/validation.js"></script>
+
+    <!-- Main App -->
+    <script type = "module" src="/lifestyle-tracker/js/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/lifestyle-tracker/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+
+    <!-- iOS PWA Prompt -->
+    <script>
+        // Detects if device is on iOS 
+        const isIos = () => {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent);
+        }
+        // Detects if device is in standalone mode
+        const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+        // Show iOS install prompt
+        if (isIos() && !isInStandaloneMode()) {
+            const iosPrompt = document.createElement('div');
+            iosPrompt.className = 'ios-prompt';
+            iosPrompt.innerHTML = 'Install this application on your iPhone: tap <img src="/lifestyle-tracker/assets/icons/ios-share.svg" alt="Share icon"> and then "Add to Home Screen"';
+            document.body.appendChild(iosPrompt);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+    "name": "Lifestyle Tracker",
+    "short_name": "LT",
+    "start_url": "/lifestyle-tracker/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4CAF50",
+    "description": "A comprehensive PWA for tracking and improving your lifestyle.",
+    "icons": [
+        {
+            "src": "/lifestyle-tracker/assets/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/lifestyle-tracker/assets/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

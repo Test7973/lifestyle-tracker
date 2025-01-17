@@ -1,0 +1,53 @@
+/* General styles for the entire application */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header Styles */
+.app-header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-brand {
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0 15px;
+}
+
+/* Main Content Styles */
+.main-content {
+    padding: 20px;
+}
+
+/* Loading and Offline Indicators */
+.loader, .offline-indicator {
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+.hidden {
+    display: none;
+}

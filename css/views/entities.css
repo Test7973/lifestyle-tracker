@@ -1,0 +1,28 @@
+/* Styles specific to the entries view */
+.entries-container {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.entry-form, .entries-list {
+    margin-bottom: 20px;
+}
+
+.entry-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.entry-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.entry-content {
+    font-size: 0.9em;
+    color: #555;
+}

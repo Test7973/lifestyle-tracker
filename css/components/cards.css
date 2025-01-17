@@ -1,0 +1,32 @@
+/* Styles for cards */
+.summary-card, .progress-card, .goal-item, .entry-item {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3, .progress-card h3, .goal-item h3 {
+    margin-top: 0;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 20px;
+    background-color: #4CAF50;
+    width: 0%; /* Initial width, will be set by JS */
+}
+
+.entry-header, .goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
