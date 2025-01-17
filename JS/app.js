@@ -8,7 +8,7 @@ class LifestyleTrackerApp {
         this.currentRoute = null;
         this.isOnline = navigator.onLine;
         this.baseUrl = '/lifestyle-tracker'; // GitHub Pages base path
-        
+
         // State management
         this.state = {
             user: null,
@@ -34,7 +34,7 @@ class LifestyleTrackerApp {
 
             // Initialize database
             await this.db.init();
-            
+
             // Initialize authentication
             this.auth = new Auth(this.db);
 
@@ -66,7 +66,7 @@ class LifestyleTrackerApp {
                     { scope: this.baseUrl + '/' }
                 );
                 console.log('ServiceWorker registration successful');
-                
+
                 // Set up notification permission
                 if ('Notification' in window) {
                     this.state.notifications.permission = Notification.permission;
@@ -103,10 +103,10 @@ class LifestyleTrackerApp {
     updateOnlineStatus() {
         this.isOnline = navigator.onLine;
         this.render();
-        
+
         // Show appropriate notification
-        const message = this.isOnline ? 
-            'Back online - syncing data' : 
+        const message = this.isOnline ?
+            'Back online - syncing data' :
             'You are offline - changes will be saved locally';
         this.showNotification(message);
     }
@@ -122,7 +122,7 @@ class LifestyleTrackerApp {
                     this.state.user = userData;
                     // Load user settings
                     this.state.settings = await this.db.getDecryptedData(
-                        'settings', 
+                        'settings',
                         this.cryptoKey
                     );
                 }
@@ -137,7 +137,7 @@ class LifestyleTrackerApp {
     async handleRoute(pathname) {
         // Remove base path for GitHub Pages
         const route = pathname.replace(this.baseUrl, '');
-        
+
         // Define routes
         const routes = {
             '/': 'home',
@@ -176,7 +176,7 @@ class LifestyleTrackerApp {
         }
 
         // Get main container
-        const mainContainer = document.getElementById('app');
+        const mainContainer = document.getElementById('main-content'); // Use 'main-content'
         if (!mainContainer) return;
 
         // Render offline indicator if needed
@@ -227,7 +227,7 @@ class LifestyleTrackerApp {
 
     renderOfflineIndicator() {
         let indicator = document.getElementById('offline-indicator');
-        
+
         if (!this.isOnline) {
             if (!indicator) {
                 indicator = document.createElement('div');
@@ -246,9 +246,10 @@ class LifestyleTrackerApp {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
-        
-        document.body.appendChild(notification);
-        
+
+        const notificationArea = document.getElementById('notification-area');
+        notificationArea.appendChild(notification);
+
         // Remove after 3 seconds
         setTimeout(() => {
             notification.remove();
@@ -257,6 +258,102 @@ class LifestyleTrackerApp {
 
     showError(message) {
         this.showNotification(message, 'error');
+    }
+
+    renderHome(container) {
+        container.innerHTML = `
+            <h2>Welcome to the Lifestyle Tracker</h2>
+            <p>Start tracking your lifestyle and achieving your goals!</p>
+            <div>
+                <a href="${this.baseUrl}/login" data-route="/login">Login</a>
+                <a href="${this.baseUrl}/signup" data-route="/signup">Sign Up</a>
+            </div>
+        `;
+    }
+
+    renderLogin(container) {
+        container.innerHTML = `
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        `;
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(loginForm);
+            const password = formData.get('password');
+            try {
+                this.cryptoKey = await this.auth.login(password);
+                this.state.user = { loggedIn: true };
+                await this.db.getDecryptedData('settings', this.cryptoKey)
+                    .then(settings => this.state.settings = settings);
+                this.navigateTo('/dashboard');
+            } catch (error) {
+                this.showError('Login failed');
+            }
+        });
+    }
+
+    renderSignup(container) {
+        container.innerHTML = `
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+        `;
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(signupForm);
+            const password = formData.get('password');
+            try {
+                this.cryptoKey = await this.auth.setupAccount(password);
+                this.state.user = { loggedIn: true };
+                this.state.settings = await this.db.getDecryptedData('settings', this.cryptoKey);
+                this.navigateTo('/dashboard');
+            } catch (error) {
+                this.showError('Signup failed');
+            }
+        });
+    }
+
+    async renderDashboard(container) {
+        if (!this.dashboardView) {
+            this.dashboardView = new DashboardView(this);
+        }
+        await this.dashboardView.render(container);
+    }
+
+    async renderEntries(container) {
+        if (!this.entriesView) {
+            this.entriesView = new EntriesView(this);
+        }
+        await this.entriesView.render(container);
+    }
+
+    async renderGoals(container) {
+        if (!this.goalsView) {
+            this.goalsView = new GoalsView(this);
+        }
+        await this.goalsView.render(container);
+    }
+
+    renderSettings(container) {
+        container.innerHTML = `
+            <h2>Settings</h2>
+            <p>Coming soon...</p>
+        `;
+        // Implement settings view logic here (to be implemented later)
+    }
+
+    render404(container) {
+        container.innerHTML = `
+            <h2>404 Not Found</h2>
+            <p>The page you're looking for doesn't exist.</p>
+        `;
     }
 }
 
