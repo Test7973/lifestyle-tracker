@@ -1,4 +1,4 @@
-class Database {
+export class Database {
     constructor() {
         this.dbName = 'lifestyleTracker';
         this.version = 1;
@@ -243,5 +243,39 @@ class Database {
                 reject(error);
             }
         });
+    }
+    
+}
+class CryptoUtils {
+    static async encryptData(data, cryptoKey) {
+        // Implementation of encryption
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const encoded = new TextEncoder().encode(JSON.stringify(data));
+        
+        const encrypted = await crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv },
+            cryptoKey,
+            encoded
+        );
+        
+        return {
+            encrypted: Array.from(new Uint8Array(encrypted)),
+            iv: Array.from(iv)
+        };
+    }
+
+    static async decryptData(encryptedData, cryptoKey, iv) {
+        try {
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: new Uint8Array(iv) },
+                cryptoKey,
+                new Uint8Array(encryptedData)
+            );
+            
+            return JSON.parse(new TextDecoder().decode(decrypted));
+        } catch (error) {
+            console.error('Decryption failed:', error);
+            throw error;
+        }
     }
 }
