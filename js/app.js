@@ -1,5 +1,7 @@
 // app.js
 
+import { Database } from './db.js';
+import { GoalsView } from './views/goals.js';
 class LifestyleTrackerApp {
     constructor() {
         this.db = new Database();
