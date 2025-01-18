@@ -1,6 +1,5 @@
 // js/views/goals.js
-
-class GoalsView {
+export class GoalsView {
     constructor(app) {
         this.app = app;
         this.db = app.db;
@@ -11,14 +10,13 @@ class GoalsView {
         container.innerHTML = '';
         const goalsContainer = document.createElement('div');
         goalsContainer.className = 'goals-container';
-
+        
         // Add new goal form
         goalsContainer.appendChild(this.createGoalForm());
-
+        
         // Add goals list
         const goalsList = await this.createGoalsList();
         goalsContainer.appendChild(goalsList);
-
         container.appendChild(goalsContainer);
     }
 
@@ -38,7 +36,6 @@ class GoalsView {
             <input type="date" name="deadline" required>
             <button type="submit">Add Goal</button>
         `;
-
         form.addEventListener('submit', this.handleNewGoal.bind(this));
         return form;
     }
@@ -46,15 +43,12 @@ class GoalsView {
     async createGoalsList() {
         const list = document.createElement('div');
         list.className = 'goals-list';
-
-        const goals = await this.db.getAllGoals(this.cryptoKey);
+        const goals = await this.db.getDecryptedData('goals', this.cryptoKey); // Updated to use the correct DB method
         goals.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
-
         goals.forEach(goal => {
             const goalElement = this.createGoalElement(goal);
             list.appendChild(goalElement);
         });
-
         return list;
     }
 
@@ -62,7 +56,7 @@ class GoalsView {
         const element = document.createElement('div');
         element.className = 'goal-item';
         const progress = (goal.current / goal.target) * 100;
-        
+       
         element.innerHTML = `
             <div class="goal-header">
                 <h3>${goal.title}</h3>
@@ -82,7 +76,7 @@ class GoalsView {
     async handleNewGoal(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
-        
+       
         try {
             const goal = {
                 title: formData.get('title'),
@@ -95,11 +89,11 @@ class GoalsView {
                 createdAt: new Date().toISOString(),
                 createdOffline: !navigator.onLine
             };
-
-            await this.db.addGoal(goal, this.cryptoKey);
+            
+            await this.db.saveEncryptedData('goals', goal, this.cryptoKey); // Updated to use the correct DB method
             this.app.showNotification('Goal added successfully');
             event.target.reset();
-            
+           
             // Refresh goals list
             const newList = await this.createGoalsList();
             const oldList = document.querySelector('.goals-list');
@@ -109,5 +103,3 @@ class GoalsView {
         }
     }
 }
-
-export default GoalsView;
