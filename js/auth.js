@@ -1,5 +1,5 @@
-// js/auth.js
-class Auth {
+// auth.js
+export class Auth {
     constructor(database) {
         this.db = database;
     }
