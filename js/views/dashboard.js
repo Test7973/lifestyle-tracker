@@ -1,4 +1,3 @@
-// js/views/dashboard.js
 
 class DashboardView {
     constructor(app) {
@@ -23,7 +22,7 @@ class DashboardView {
                 this.loadActiveGoals(),
                 this.loadSettings()
             ]);
-
+            
             // Create dashboard sections
             const dashboard = document.createElement('div');
             dashboard.className = 'dashboard';
@@ -94,7 +93,7 @@ class DashboardView {
             acc[entry.category].push(entry);
             return acc;
         }, {});
-
+        
         // Create summary cards for each category
         Object.entries(categorized).forEach(([category, categoryEntries]) => {
             const card = document.createElement('div');
@@ -167,10 +166,10 @@ class DashboardView {
                 value: preset.value,
                 unit: preset.unit,
                 description: preset.description,
-                timestamp: new Date().toISOString(),
+                date: new Date().toISOString(),
                 createdOffline: !navigator.onLine
             };
-
+            
             await this.db.addEntry(entry, this.cryptoKey);
             
             // Refresh the today's summary section
@@ -233,7 +232,7 @@ class DashboardView {
                         value: parseInt(match[1]),
                         unit: match[2],
                         description: text,
-                        timestamp: new Date().toISOString(),
+                        date: new Date().toISOString(),
                         createdOffline: !navigator.onLine
                     };
                     break;
@@ -263,7 +262,8 @@ class DashboardView {
     }
 
     async loadActiveGoals() {
-        return await this.db.getGoalsByStatus('active', this.cryptoKey);
+        const goals = await this.db.getDecryptedData('goals', this.cryptoKey);
+        return goals.filter(g => g.status == 'active');
     }
 
     async loadSettings() {

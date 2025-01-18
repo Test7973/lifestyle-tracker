@@ -1,4 +1,3 @@
-// js/views/goals.js
 export class GoalsView {
     constructor(app) {
         this.app = app;
@@ -43,7 +42,7 @@ export class GoalsView {
     async createGoalsList() {
         const list = document.createElement('div');
         list.className = 'goals-list';
-        const goals = await this.db.getDecryptedData('goals', this.cryptoKey); // Updated to use the correct DB method
+        const goals = await this.db.getDecryptedData('goals', this.cryptoKey);
         goals.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
         goals.forEach(goal => {
             const goalElement = this.createGoalElement(goal);
@@ -89,8 +88,9 @@ export class GoalsView {
                 createdAt: new Date().toISOString(),
                 createdOffline: !navigator.onLine
             };
-            
-            await this.db.saveEncryptedData('goals', goal, this.cryptoKey); // Updated to use the correct DB method
+            const goals = await this.db.getDecryptedData('goals',this.cryptoKey) || [];
+            goals.push(goal);
+            await this.db.saveEncryptedData('goals', goals, this.cryptoKey);
             this.app.showNotification('Goal added successfully');
             event.target.reset();
            

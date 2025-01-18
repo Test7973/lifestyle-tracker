@@ -1,5 +1,3 @@
-// js/views/entries.js
-
 class EntriesView {
     constructor(app) {
         this.app = app;
@@ -50,7 +48,7 @@ class EntriesView {
         list.className = 'entries-list';
 
         const entries = await this.db.getAllEntries(this.cryptoKey);
-        entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        entries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         entries.forEach(entry => {
             const entryElement = this.createEntryElement(entry);
@@ -66,7 +64,7 @@ class EntriesView {
         element.innerHTML = `
             <div class="entry-header">
                 <span class="category">${entry.category}</span>
-                <span class="timestamp">${new Date(entry.timestamp).toLocaleString()}</span>
+                <span class="timestamp">${new Date(entry.date).toLocaleString()}</span>
             </div>
             <div class="entry-content">
                 <span class="value">${entry.value} ${entry.unit}</span>
@@ -86,7 +84,7 @@ class EntriesView {
                 value: Number(formData.get('value')),
                 unit: formData.get('unit'),
                 description: formData.get('description'),
-                timestamp: new Date().toISOString(),
+                date: new Date().toISOString(),
                 createdOffline: !navigator.onLine
             };
 

@@ -71,9 +71,6 @@ class SettingsView {
 
         this.attachEventListeners(settingsContainer);
         container.appendChild(settingsContainer);
-    }
-
-    attachEventListeners(container) {
         // Theme change
         container.querySelector('#theme').addEventListener('change', this.handleThemeChange.bind(this));
 
@@ -189,6 +186,7 @@ class SettingsView {
                     const data = JSON.parse(e.target.result);
                     await this.db.importData(data, this.cryptoKey);
                     this.app.showNotification('Data imported successfully');
+                    this.app.render();
                 };
                 reader.readAsText(file);
             } catch (error) {
@@ -205,6 +203,7 @@ class SettingsView {
         try {
             await this.db.clearAllData(this.cryptoKey);
             this.app.showNotification('All data cleared');
+            this.app.navigateTo('/dashboard');
         } catch (error) {
             this.app.showError('Failed to clear data');
         }

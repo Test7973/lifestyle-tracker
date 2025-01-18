@@ -1,8 +1,9 @@
-// app.js
 // At the top of app.js, add:
 import { Auth } from './auth.js';
 import { Database } from './db.js';
 import { GoalsView } from './views/goals.js';
+import DashboardView from './views/dashboard.js';
+import EntriesView from './views/entries.js';
 class LifestyleTrackerApp {
     constructor() {
         this.db = new Database();
@@ -89,7 +90,7 @@ class LifestyleTrackerApp {
         window.addEventListener('offline', this.updateOnlineStatus);
 
         // Navigation
-        window.addEventListener('popstate', (event) => {
+        window.addEventListener('popstate', () => {
             this.handleRoute(window.location.pathname);
         });
 
@@ -101,6 +102,7 @@ class LifestyleTrackerApp {
                 this.navigateTo(route);
             }
         });
+        this.renderNavLinks();
     }
 
     updateOnlineStatus() {
@@ -140,7 +142,7 @@ class LifestyleTrackerApp {
     async handleRoute(pathname) {
         // Remove base path for GitHub Pages
         const route = pathname.replace(this.baseUrl, '');
-
+        
         // Define routes
         const routes = {
             '/': 'home',
@@ -151,12 +153,12 @@ class LifestyleTrackerApp {
             '/goals': 'goals',
             '/settings': 'settings'
         };
-
+        
         // Get view name from routes or default to 404
         const view = routes[route] || '404';
-
+        
         // Check if view requires authentication
-        const publicViews = ['login', 'signup', '404'];
+        const publicViews = ['login', 'signup', '404','home'];
         if (!publicViews.includes(view) && !this.state.user) {
             this.navigateTo('/login');
             return;
@@ -169,7 +171,7 @@ class LifestyleTrackerApp {
     navigateTo(route) {
         const url = `${this.baseUrl}${route}`;
         window.history.pushState({}, '', url);
-        this.handleRoute(route);
+        this.handleRoute(url);
     }
 
     render() {
@@ -181,10 +183,10 @@ class LifestyleTrackerApp {
         // Get main container
         const mainContainer = document.getElementById('main-content'); // Use 'main-content'
         if (!mainContainer) return;
-
+        mainContainer.innerHTML = '';
         // Render offline indicator if needed
         this.renderOfflineIndicator();
-
+        this.renderNavLinks();
         // Render current view
         switch (this.state.currentView) {
             case 'home':
@@ -357,6 +359,54 @@ class LifestyleTrackerApp {
             <h2>404 Not Found</h2>
             <p>The page you're looking for doesn't exist.</p>
         `;
+    }
+    renderNavLinks() {
+        const navLinksContainer = document.getElementById('nav-links');
+        navLinksContainer.innerHTML = ''; // Clear existing links
+
+        if (this.state.user) {
+            // User is logged in
+            const dashboardLink = this.createNavLink('Dashboard', '/dashboard');
+            const entriesLink = this.createNavLink('Entries', '/entries');
+            const goalsLink = this.createNavLink('Goals', '/goals');
+            const settingsLink = this.createNavLink('Settings', '/settings');
+            const logoutLink = this.createNavLink('Logout', '/logout');
+
+            // Add click event to logout link
+            logoutLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.logout();
+            });
+
+            navLinksContainer.appendChild(dashboardLink);
+            navLinksContainer.appendChild(entriesLink);
+            navLinksContainer.appendChild(goalsLink);
+            navLinksContainer.appendChild(settingsLink);
+            navLinksContainer.appendChild(logoutLink);
+        } else {
+            // User is not logged in
+            const loginLink = this.createNavLink('Login', '/login');
+            const signupLink = this.createNavLink('Signup', '/signup');
+
+            navLinksContainer.appendChild(loginLink);
+            navLinksContainer.appendChild(signupLink);
+        }
+    }
+    createNavLink(text, route) {
+        const link = document.createElement('a');
+        link.href = `${this.baseUrl}${route}`;
+        link.textContent = text;
+        link.setAttribute('data-route', route);
+        return link;
+    }
+    logout() {
+        // Clear session data
+        localStorage.removeItem('sessionToken');
+        this.state.user = null;
+        this.cryptoKey = null;
+
+        // Navigate to home or login page
+        this.navigateTo('/login');
     }
 }
 
