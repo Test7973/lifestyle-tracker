@@ -1,5 +1,6 @@
 // app.js
-
+// At the top of app.js, add:
+import { Auth } from './auth.js';
 import { Database } from './db.js';
 import { GoalsView } from './views/goals.js';
 class LifestyleTrackerApp {
